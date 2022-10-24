@@ -1,11 +1,15 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:monahawk_woocommerce/models/products.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:woocommerce_case/woocom_api.dart';
 
-part 'get_product_provider.g.dart';
+final productIdProvider = StateProvider<int>((ref) {
+  return 0;
+});
 
-@riverpod
-Future<WooProduct> getProduct(GetProductRef ref, {required int? id}) async {
+final productProvider = FutureProvider<WooProduct>((
+  ref,
+) async {
+  int id = ref.watch(productIdProvider);
   try {
     final json = await WooComApi.wc
         .get('products/$id')
@@ -71,4 +75,4 @@ Future<WooProduct> getProduct(GetProductRef ref, {required int? id}) async {
         0,
         []);
   }
-}
+});

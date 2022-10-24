@@ -7,10 +7,8 @@ part 'get_products_provider.g.dart';
 Future<List<WooProduct>> getProducts(
   GetProductsRef ref,
 ) async {
-  final json = await WooComApi.wc.get('products');
+  final json = await WooComApi.wc.getProducts(perPage: 100);
   //parse json to Product List and return
-  Iterable list = json;
-  var products =
-      List<WooProduct>.from(list.map((model) => WooProduct.fromJson(model)));
-  return products;
+  print(json.length);
+  return json;
 }

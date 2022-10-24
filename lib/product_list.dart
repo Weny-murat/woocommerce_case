@@ -58,7 +58,7 @@ class ProductList extends ConsumerWidget {
                           ElevatedButton(
                               onPressed: () {
                                 PlaceHolder.lastSelectedProductId =
-                                    data[index].id;
+                                    data[index].id!;
                                 PlaceHolder.pageController.animateToPage(2,
                                     duration: const Duration(milliseconds: 500),
                                     curve: Curves.ease);
@@ -98,7 +98,6 @@ class HomePage extends ConsumerWidget {
         showElevation: true, // use this to remove appBar's elevation
         onItemSelected: (index) => ({
           ref.read(pageviewProvider.notifier).state = index,
-          PlaceHolder.lastSelectedProductId = null,
           pageController.animateToPage(index,
               duration: const Duration(milliseconds: 300), curve: Curves.ease)
         }),
