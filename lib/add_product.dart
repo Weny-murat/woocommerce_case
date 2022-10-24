@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:woocommerce_case/placeholder_data.dart';
+import 'package:woocommerce_case/providers/pageview_provider.dart';
 import 'package:woocommerce_case/woocom_api.dart';
 
 class AddProduct extends ConsumerWidget {
@@ -19,7 +20,8 @@ class AddProduct extends ConsumerWidget {
             onPressed: () async {
               await WooComApi.wc
                   .post('products', PlaceHolder.data)
-                  .then((value) => debugPrint(value.toString()));
+                  .whenComplete(
+                      () => ref.read(pageviewProvider.notifier).state = 0);
             },
             child: const Text('Veriyi Ekle')),
       ],
