@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class PlaceHolder {
   static PageController pageController = PageController();
-  static int lastSelectedProductId = 0;
   static const data = <String, dynamic>{
     'name': "Ürün Adı",
     'type': "simple",

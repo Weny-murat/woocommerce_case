@@ -15,7 +15,7 @@ class AddProduct extends ConsumerWidget {
     return Column(
       children: [
         Text(cacheList.toString()),
-        TextButton(
+        ElevatedButton(
             onPressed: () async {
               await WooComApi.wc
                   .post('products', PlaceHolder.data)

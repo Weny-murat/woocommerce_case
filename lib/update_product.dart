@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:woocommerce_case/providers/get_product_provider.dart';
+import 'package:woocommerce_case/woocom_api.dart';
 
 class UpdateProduct extends ConsumerStatefulWidget {
   const UpdateProduct({super.key});
@@ -27,25 +28,50 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
         ),
         ElevatedButton(
             onPressed: () async {
-              ref.read(productIdProvider.notifier).state =
-                  int.parse(textController.text);
-              debugPrint(textController.text);
+              try {
+                ref.read(productIdProvider.notifier).state =
+                    int.parse(textController.text);
+              } catch (e) {
+                ref.read(productIdProvider.notifier).state = 0;
+              }
             },
             child: const Text('Ürün Ara')),
         productAsync.when(
           data: (data) {
-            print(data);
             return Column(
               children: [
                 Text('Ürün id: ${data.id}'),
                 Text(data.name ?? 'İsim Verisi Yok'),
                 Text(data.price ?? 'Fiyat Verisi Yok'),
-                ElevatedButton(
-                    onPressed: () {
-                      // PlaceHolder.lastSelectedProductId = data.id;
-                      // ref.refresh(getProductProvider(id: productId!));
-                    },
-                    child: const Text('Kaydet')),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                      onPressed: data.id == 0
+                          ? null
+                          : () async {
+                              await WooComApi.wc
+                                  .put('products/${data.id}', null);
+                            },
+                      child: const Text('Güncelle'),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: data.id == 0
+                          ? null
+                          : () async {
+                              await WooComApi.wc
+                                  .delete('products/${data.id}', {});
+                            },
+                      child: const Text('Sil'),
+                    ),
+                  ],
+                ),
               ],
             );
           },

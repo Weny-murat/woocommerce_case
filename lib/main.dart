@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:woocommerce_case/product_list.dart';
+import 'package:woocommerce_case/homepage.dart';
 
 Future main() async {
   await dotenv.load(fileName: ".env");
