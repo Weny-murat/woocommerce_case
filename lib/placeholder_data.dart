@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PlaceHolder {
   static PageController pageController = PageController();
   static const data = <String, dynamic>{
-    'name': "Ürün Adı",
+    'name': "Deneme",
     'type': "simple",
     'regular_price': "21.99",
     'description': "Burası çooooooook uzun bir ürün tanıtım yazısıdır.",
