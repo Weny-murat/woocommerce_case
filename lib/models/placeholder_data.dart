@@ -5,6 +5,7 @@ class PlaceHolder {
   static const data = <String, dynamic>{
     'name': "Deneme",
     'type': "simple",
+    'price': "10",
     'regular_price': "21.99",
     'description': "Burası çooooooook uzun bir ürün tanıtım yazısıdır.",
     'short_description': "Kısacık bir ürün tanıtım.",

@@ -169,7 +169,7 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
                                     await WooComApi.wc
                                         .put('products/${data.id}', {
                                           "name": nameController.text,
-                                          "regular_price": priceController.text
+                                          "price": priceController.text
                                         })
                                         .whenComplete(() => showDialog(
                                             context: context,
