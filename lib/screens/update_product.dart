@@ -18,6 +18,7 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
     TextEditingController textController = TextEditingController();
     TextEditingController nameController = TextEditingController();
     TextEditingController priceController = TextEditingController();
+
     return Column(
       children: [
         Padding(
@@ -25,7 +26,7 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
           child: TextFormField(
             controller: textController,
             decoration: const InputDecoration(
-              hintText: 'Ürün ID',
+              hintText: 'Ürün aramak için Id giriniz',
             ),
           ),
         ),
@@ -42,6 +43,8 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
         const Divider(),
         productAsync.when(
           data: (data) {
+            nameController.text = data.name!;
+            priceController.text = data.price!;
             return Padding(
               padding:
                   const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
@@ -158,12 +161,28 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
                             ? null
                             : () async {
                                 try {
-                                  await WooComApi.wc.put(
-                                      'products/${data.id}', {
-                                    "name": nameController.text,
-                                    "regular_price": priceController.text
-                                  }).whenComplete(
-                                      () => ref.refresh(productProvider));
+                                  await WooComApi.wc
+                                      .put('products/${data.id}', {
+                                        "name": nameController.text,
+                                        "regular_price": priceController.text
+                                      })
+                                      .whenComplete(() => showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                                title: const Text('Başarılı'),
+                                                content: const Text(
+                                                    'Ürün güncellendi'),
+                                                actions: [
+                                                  TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                              context),
+                                                      child:
+                                                          const Text('Tamam'))
+                                                ],
+                                              )))
+                                      .whenComplete(
+                                          () => ref.refresh(productProvider));
                                 } catch (e) {
                                   showDialog(
                                       context: context,
@@ -190,9 +209,22 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
                             : () async {
                                 await WooComApi.wc.delete('products/${data.id}',
                                     {'force': true}).whenComplete(() {
-                                  ref.read(productIdProvider.notifier).state =
-                                      0;
-                                  ref.refresh(productListProvider);
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                            title: const Text('Başarılı'),
+                                            content: const Text('Ürün silindi'),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: const Text('Tamam'))
+                                            ],
+                                          )).whenComplete(() {
+                                    ref.read(productIdProvider.notifier).state =
+                                        0;
+                                    ref.refresh(productListProvider);
+                                  });
                                 });
                               },
                         child: const Text('Sil'),

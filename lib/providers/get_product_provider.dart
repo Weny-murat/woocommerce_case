@@ -18,7 +18,7 @@ final productProvider = FutureProvider<WooProduct>((
   } catch (e) {
     return WooProduct(
         id,
-        'Lütfen geçerli bir ürün id\'si girerek arama yapınız',
+        '',
         '',
         '',
         '',

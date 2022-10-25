@@ -24,6 +24,17 @@ class AddProduct extends ConsumerWidget {
             onPressed: () async {
               await WooComApi.wc
                   .post('products', PlaceHolder.data)
+                  .whenComplete(() => showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: const Text('Başarılı'),
+                            content: const Text('Ürün eklendi'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Tamam'))
+                            ],
+                          )))
                   .whenComplete(
                       () => ref.read(pageviewProvider.notifier).state = 2)
                   .whenComplete(() => ref.refresh(productListProvider))

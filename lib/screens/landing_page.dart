@@ -31,7 +31,7 @@ class _LandingPageState extends State<LandingPage> {
                 color: Colors.blue,
                 shadows: [
                   Shadow(
-                    blurRadius: 5.0,
+                    blurRadius: 2.0,
                     color: Colors.black,
                     offset: Offset(1.0, 1.0),
                   ),
