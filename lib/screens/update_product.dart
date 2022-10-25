@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:woocommerce_case/providers/get_product_provider.dart';
-import 'package:woocommerce_case/woocom_api.dart';
+import 'package:woocommerce_case/infrastructure/woocom_api.dart';
+import 'package:woocommerce_case/providers/product_list_provider.dart';
 
 class UpdateProduct extends ConsumerStatefulWidget {
   const UpdateProduct({super.key});
@@ -15,6 +16,7 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
   Widget build(BuildContext context) {
     var productAsync = ref.watch(productProvider);
     TextEditingController textController = TextEditingController();
+    TextEditingController nameController = TextEditingController();
     TextEditingController priceController = TextEditingController();
     return Column(
       children: [
@@ -46,32 +48,39 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text('Geçerli Ürün id: ${data.id}'),
+                  const Divider(
+                    color: Colors.black,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: Text(
                           'Ürün adı: ${data.name}',
-                          overflow: TextOverflow.ellipsis,
+                          overflow: TextOverflow.clip,
                         ),
                       ),
-                      const Icon(Icons.arrow_forward_ios_outlined,
-                          color: Colors.green),
-                      SizedBox(
-                        width: 100,
-                        child: TextFormField(
-                          controller: textController,
-                          decoration: const InputDecoration(
-                            hintText: 'Yeni Ürün Adı',
+                      Row(
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Icon(Icons.arrow_forward_ios_outlined,
+                                color: Colors.green),
                           ),
-                        ),
+                          SizedBox(
+                            width: 100,
+                            child: TextFormField(
+                              controller: nameController,
+                              decoration: const InputDecoration(
+                                hintText: 'Yeni Ürün Adı',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  const Divider(
-                    color: Colors.black,
-                  ),
-                  Text('Ürün id: ${data.id}'),
                   const Divider(
                     color: Colors.black,
                   ),
@@ -79,16 +88,23 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Ürün fiyatı: ${data.price}'),
-                      const Icon(Icons.arrow_forward_ios_outlined,
-                          color: Colors.green),
-                      SizedBox(
-                        width: 100,
-                        child: TextFormField(
-                          controller: priceController,
-                          decoration: const InputDecoration(
-                            hintText: 'Yeni Ürün ID',
+                      Row(
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Icon(Icons.arrow_forward_ios_outlined,
+                                color: Colors.green),
                           ),
-                        ),
+                          SizedBox(
+                            width: 100,
+                            child: TextFormField(
+                              controller: priceController,
+                              decoration: const InputDecoration(
+                                hintText: 'Yeni Fiyat',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -114,24 +130,18 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
                           clipBehavior: Clip.none,
                           fit: StackFit.expand,
                           children: [
-                            Image.asset(
-                              'assets/appicon/icon.png',
-                              color: Colors.blueGrey,
+                            const Center(child: Text('Henüz Resim seçilmedi')),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: FloatingActionButton(
+                                  onPressed: () async {},
+                                  child: const Icon(Icons.add),
+                                ),
+                              ),
                             ),
-                            Positioned(
-                                bottom: 20,
-                                right: -20,
-                                child: RawMaterialButton(
-                                  onPressed: () {},
-                                  elevation: 2.0,
-                                  fillColor: const Color(0xFFF5F6F9),
-                                  padding: const EdgeInsets.all(5.0),
-                                  shape: const CircleBorder(),
-                                  child: const Icon(
-                                    Icons.camera_alt_outlined,
-                                    color: Colors.blue,
-                                  ),
-                                )),
                           ],
                         ),
                       ),
@@ -147,11 +157,27 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
                         onPressed: data.id == 0
                             ? null
                             : () async {
-                                debugPrint(priceController.text);
-                                await WooComApi.wc.put('products/${data.id}', {
-                                  "regular_price": priceController.text
-                                }).whenComplete(
-                                    () => ref.refresh(productProvider));
+                                try {
+                                  await WooComApi.wc.put(
+                                      'products/${data.id}', {
+                                    "name": nameController.text,
+                                    "regular_price": priceController.text
+                                  }).whenComplete(
+                                      () => ref.refresh(productProvider));
+                                } catch (e) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                            title: const Text('Hata'),
+                                            content: Text(e.toString()),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: const Text('Tamam'))
+                                            ],
+                                          ));
+                                }
                               },
                         child: const Text('Güncelle'),
                       ),
@@ -162,12 +188,12 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
                         onPressed: data.id == 0
                             ? null
                             : () async {
-                                await WooComApi.wc.delete(
-                                    'products/${data.id}', {
-                                  'force': true
-                                }).whenComplete(() => ref
-                                    .read(productIdProvider.notifier)
-                                    .state = 0);
+                                await WooComApi.wc.delete('products/${data.id}',
+                                    {'force': true}).whenComplete(() {
+                                  ref.read(productIdProvider.notifier).state =
+                                      0;
+                                  ref.refresh(productListProvider);
+                                });
                               },
                         child: const Text('Sil'),
                       ),

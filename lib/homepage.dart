@@ -1,11 +1,11 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:woocommerce_case/add_product.dart';
-import 'package:woocommerce_case/placeholder_data.dart';
-import 'package:woocommerce_case/product_list.dart';
+import 'package:woocommerce_case/screens/add_product.dart';
+import 'package:woocommerce_case/models/placeholder_data.dart';
+import 'package:woocommerce_case/screens/product_list.dart';
 import 'package:woocommerce_case/providers/pageview_provider.dart';
-import 'package:woocommerce_case/update_product.dart';
+import 'package:woocommerce_case/screens/update_product.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});

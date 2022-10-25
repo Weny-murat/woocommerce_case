@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:monahawk_woocommerce/models/products.dart';
-import 'package:woocommerce_case/woocom_api.dart';
+import 'package:woocommerce_case/infrastructure/woocom_api.dart';
 
 final productIdProvider = StateProvider<int>((ref) {
   return 0;

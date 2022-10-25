@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:woocommerce_case/placeholder_data.dart';
+import 'package:woocommerce_case/models/placeholder_data.dart';
 import 'package:woocommerce_case/providers/get_product_provider.dart';
 import 'package:woocommerce_case/providers/product_list_provider.dart';
 import 'package:woocommerce_case/providers/pageview_provider.dart';
@@ -27,12 +27,18 @@ class ProductList extends ConsumerWidget {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                      disabledBackgroundColor: Colors.blue,
                       backgroundColor: Colors.blue,
                       elevation: 0,
                     ),
-                    onPressed: () async {
-                      ref.read(productListPageProvider.notifier).state--;
-                    },
+                    onPressed:
+                        ref.read(productListPageProvider.notifier).state == 1
+                            ? null
+                            : () async {
+                                ref
+                                    .read(productListPageProvider.notifier)
+                                    .state--;
+                              },
                     child: Row(
                       children: const [
                         Icon(Icons.arrow_back_ios),
@@ -50,11 +56,14 @@ class ProductList extends ConsumerWidget {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
+                      disabledBackgroundColor: Colors.blue,
                       elevation: 0,
                     ),
-                    onPressed: () async {
-                      ref.read(productListPageProvider.notifier).state++;
-                    },
+                    onPressed: data.length < 100
+                        ? null
+                        : () async {
+                            ref.read(productListPageProvider.notifier).state++;
+                          },
                     child: Row(
                       children: const [
                         Text('Sonraki'),
