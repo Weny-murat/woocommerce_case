@@ -19,7 +19,7 @@ class ProductList extends ConsumerWidget {
             child: Container(
               height: MediaQuery.of(context).size.height / 20,
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.blueGrey,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -27,8 +27,8 @@ class ProductList extends ConsumerWidget {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      disabledBackgroundColor: Colors.blue,
-                      backgroundColor: Colors.blue,
+                      disabledBackgroundColor: Colors.blueGrey,
+                      backgroundColor: Colors.blueGrey,
                       elevation: 0,
                     ),
                     onPressed:
@@ -55,8 +55,8 @@ class ProductList extends ConsumerWidget {
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      disabledBackgroundColor: Colors.blue,
+                      disabledBackgroundColor: Colors.blueGrey,
+                      backgroundColor: Colors.blueGrey,
                       elevation: 0,
                     ),
                     onPressed: data.length < 100

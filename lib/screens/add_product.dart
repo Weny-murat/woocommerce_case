@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:woocommerce_case/infrastructure/async_value_extension.dart';
 import 'package:woocommerce_case/models/placeholder_data.dart';
-import 'package:woocommerce_case/providers/pageview_provider.dart';
-import 'package:woocommerce_case/infrastructure/woocom_api.dart';
 import 'package:woocommerce_case/providers/product_list_provider.dart';
+import 'package:woocommerce_case/screens/add_product_controller.dart';
 
-class AddProduct extends ConsumerWidget {
+class AddProduct extends ConsumerStatefulWidget {
   const AddProduct({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _AddProductState();
+}
+
+class _AddProductState extends ConsumerState<AddProduct> {
+  @override
+  Widget build(BuildContext context) {
+    ref.listen<AsyncValue>(addProductControllerProvider,
+        (_, state) => state.showSnackbarOnError(context));
     var cacheList = List.empty(growable: true);
     PlaceHolder.data.forEach((key, value) {
       cacheList.add(value);
     });
+    final AsyncValue<void> state = ref.watch(addProductControllerProvider);
     return Column(
       children: [
         Padding(
@@ -21,29 +29,18 @@ class AddProduct extends ConsumerWidget {
           child: Text(cacheList.toString()),
         ),
         ElevatedButton(
-            onPressed: () async {
-              await WooComApi.wc
-                  .post('products', PlaceHolder.data)
-                  .whenComplete(() => showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            title: const Text('Başarılı'),
-                            content: const Text('Ürün eklendi'),
-                            actions: [
-                              TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('Tamam'))
-                            ],
-                          )))
-                  .whenComplete(
-                      () => ref.read(pageviewProvider.notifier).state = 2)
-                  .whenComplete(() => ref.refresh(productListProvider))
-                  .whenComplete(() => PlaceHolder.pageController.animateToPage(
-                      2,
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.ease));
-            },
-            child: const Text('Veriyi Ekle')),
+          onPressed: state.isLoading
+              ? null
+              : () {
+                  ref
+                      .read(addProductControllerProvider.notifier)
+                      .postProduct(PlaceHolder.data)
+                      .whenComplete(() => ref.refresh(productListProvider));
+                },
+          child: state.isLoading
+              ? const CircularProgressIndicator()
+              : const Text('Deneme Ürünü Ekle'),
+        ),
       ],
     );
   }
