@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:woocommerce_case/providers/get_product_provider.dart';
 import 'package:woocommerce_case/infrastructure/woocom_api.dart';
 import 'package:woocommerce_case/providers/product_list_provider.dart';
+import 'package:woocommerce_case/screens/custom_widgets/info_bar.dart';
+import 'package:woocommerce_case/screens/custom_widgets/standart_edit_field.dart';
 
 class UpdateProduct extends ConsumerStatefulWidget {
   const UpdateProduct({super.key});
@@ -17,7 +19,8 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
     var productAsync = ref.watch(productProvider);
     TextEditingController textController = TextEditingController();
     TextEditingController nameController = TextEditingController();
-    TextEditingController priceController = TextEditingController();
+    TextEditingController regularPriceController = TextEditingController();
+    TextEditingController salePriceController = TextEditingController();
 
     return SingleChildScrollView(
       child: Column(
@@ -46,74 +49,44 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
           productAsync.when(
             data: (data) {
               nameController.text = data.name!;
-              priceController.text = data.price!;
+              regularPriceController.text = data.price!;
+              salePriceController.text = data.salePrice!;
               return Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Geçerli Ürün id: ${data.id}'),
-                    const Divider(
-                      color: Colors.black,
+                    InfoBar(
+                      title: 'Geçerli Ürün Id: ',
+                      value: data.id!.toString(),
+                      isEditable: false,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Ürün adı: ${data.name}',
-                            overflow: TextOverflow.clip,
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Icon(Icons.arrow_forward_ios_outlined,
-                                  color: Colors.green),
-                            ),
-                            SizedBox(
-                              width: 100,
-                              child: TextFormField(
-                                keyboardType: TextInputType.text,
-                                controller: nameController,
-                                decoration: const InputDecoration(
-                                  hintText: 'Yeni Ürün Adı',
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                    InfoBar(
+                      title: 'Geçerli Ürün Fiyatı: ',
+                      value: data.price!,
+                      isEditable: false,
                     ),
-                    const Divider(
-                      color: Colors.black,
+                    InfoBar(
+                      title: 'Geçerli Ürün Adı: ',
+                      value: data.name!,
+                      isEditable: true,
+                      textFormField:
+                          StandartEditField(nameController: nameController),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Ürün fiyatı: ${data.price}'),
-                        Row(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Icon(Icons.arrow_forward_ios_outlined,
-                                  color: Colors.green),
-                            ),
-                            SizedBox(
-                              width: 100,
-                              child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                controller: priceController,
-                                decoration: const InputDecoration(
-                                  hintText: 'Yeni Fiyat',
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                    InfoBar(
+                      title: 'Fiyat: ',
+                      value: data.regularPrice!,
+                      isEditable: true,
+                      textFormField: StandartEditField(
+                          nameController: regularPriceController),
+                    ),
+                    InfoBar(
+                      title: 'İndirimli Fiyat',
+                      value: data.salePrice!,
+                      isEditable: true,
+                      textFormField: StandartEditField(
+                          nameController: salePriceController),
                     ),
                     const Divider(
                       color: Colors.black,
@@ -169,7 +142,9 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
                                     await WooComApi.wc
                                         .put('products/${data.id}', {
                                           "name": nameController.text,
-                                          "price": priceController.text
+                                          "price": regularPriceController.text,
+                                          "sale_price":
+                                              salePriceController.text,
                                         })
                                         .whenComplete(() => showDialog(
                                             context: context,
