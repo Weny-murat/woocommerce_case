@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:woocommerce_case/infrastructure/async_value_extension.dart';
+import 'package:woocommerce_case/infrastructure/extensions/async_value_extension.dart';
 import 'package:woocommerce_case/providers/get_product_provider.dart';
 import 'package:woocommerce_case/providers/product_list_provider.dart';
 import 'package:woocommerce_case/screens/product_controller.dart';
@@ -74,22 +75,31 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
                       title: 'Geçerli Ürün Adı: ',
                       value: data.name!,
                       isEditable: true,
-                      textFormField:
-                          StandartEditField(nameController: nameController),
+                      textFormField: StandartEditField(
+                        formatter: FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-zA-Z0-9-]')),
+                        nameController: nameController,
+                      ),
                     ),
                     InfoBar(
                       title: 'Fiyat: ',
                       value: data.regularPrice!,
                       isEditable: true,
                       textFormField: StandartEditField(
-                          nameController: regularPriceController),
+                        nameController: regularPriceController,
+                        formatter: FilteringTextInputFormatter.allow(
+                            RegExp(r'[0-9.]')),
+                      ),
                     ),
                     InfoBar(
                       title: 'İndirimli Fiyat: ',
                       value: data.salePrice!,
                       isEditable: true,
                       textFormField: StandartEditField(
-                          nameController: salePriceController),
+                        formatter: FilteringTextInputFormatter.allow(
+                            RegExp(r'[0-9.]')),
+                        nameController: salePriceController,
+                      ),
                     ),
                     const Divider(
                       color: Colors.black,

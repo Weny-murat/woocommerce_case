@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:woocommerce_case/infrastructure/async_value_extension.dart';
+import 'package:woocommerce_case/infrastructure/extensions/async_value_extension.dart';
 import 'package:woocommerce_case/dummyData/placeholder_data.dart';
 import 'package:woocommerce_case/providers/product_list_provider.dart';
 import 'package:woocommerce_case/screens/product_controller.dart';
