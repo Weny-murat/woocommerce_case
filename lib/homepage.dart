@@ -2,7 +2,7 @@ import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:woocommerce_case/screens/add_product.dart';
-import 'package:woocommerce_case/models/placeholder_data.dart';
+import 'package:woocommerce_case/dummyData/placeholder_data.dart';
 import 'package:woocommerce_case/screens/product_list.dart';
 import 'package:woocommerce_case/providers/pageview_provider.dart';
 import 'package:woocommerce_case/screens/update_product.dart';

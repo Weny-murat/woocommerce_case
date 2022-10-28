@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:woocommerce_case/infrastructure/async_value_extension.dart';
 import 'package:woocommerce_case/providers/get_product_provider.dart';
-import 'package:woocommerce_case/infrastructure/woocom_api.dart';
 import 'package:woocommerce_case/providers/product_list_provider.dart';
+import 'package:woocommerce_case/screens/product_controller.dart';
 import 'package:woocommerce_case/screens/custom_widgets/info_bar.dart';
 import 'package:woocommerce_case/screens/custom_widgets/standart_edit_field.dart';
 
@@ -21,7 +22,9 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
     TextEditingController nameController = TextEditingController();
     TextEditingController regularPriceController = TextEditingController();
     TextEditingController salePriceController = TextEditingController();
-
+    final AsyncValue<void> state = ref.watch(productControllerProvider);
+    ref.listen<AsyncValue>(productControllerProvider,
+        (_, state) => state.showSnackbarOnChange(context));
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -82,7 +85,7 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
                           nameController: regularPriceController),
                     ),
                     InfoBar(
-                      title: 'İndirimli Fiyat',
+                      title: 'İndirimli Fiyat: ',
                       value: data.salePrice!,
                       isEditable: true,
                       textFormField: StandartEditField(
@@ -135,99 +138,42 @@ class _UpdateProductState extends ConsumerState<UpdateProduct> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blueGrey,
                           ),
-                          onPressed: data.id == 0
+                          onPressed: data.id == 0 || state.isLoading
                               ? null
-                              : () async {
-                                  try {
-                                    await WooComApi.wc
-                                        .put('products/${data.id}', {
-                                          "name": nameController.text,
-                                          "price": regularPriceController.text,
-                                          "sale_price":
-                                              salePriceController.text,
-                                        })
-                                        .whenComplete(() => showDialog(
-                                            context: context,
-                                            builder: (context) => AlertDialog(
-                                                  title: const Text('Başarılı'),
-                                                  content: const Text(
-                                                      'Ürün güncellendi'),
-                                                  actions: [
-                                                    TextButton(
-                                                        onPressed: () =>
-                                                            Navigator.pop(
-                                                                context),
-                                                        child:
-                                                            const Text('Tamam'))
-                                                  ],
-                                                )))
-                                        .whenComplete(
-                                            () => ref.refresh(productProvider));
-                                  } catch (e) {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                              title: const Text('Hata'),
-                                              content: Text(e.toString()),
-                                              actions: [
-                                                TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(context),
-                                                    child: const Text('Tamam'))
-                                              ],
-                                            ));
-                                  }
-                                },
-                          child: const Text('Güncelle'),
+                              : () => ref
+                                  .read(productControllerProvider.notifier)
+                                  .updateProduct(
+                                      id: data.id!.toString(),
+                                      data: {
+                                        'name': nameController.text,
+                                        'regular_price':
+                                            regularPriceController.text,
+                                        'sale_price': salePriceController.text,
+                                      })
+                                  .whenComplete(
+                                      () => ref.refresh(productProvider))
+                                  .whenComplete(
+                                      () => ref.refresh(productListProvider)),
+                          child: state.isLoading
+                              ? const CircularProgressIndicator()
+                              : const Text('Güncelle'),
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                           ),
-                          onPressed: data.id == 0
+                          onPressed: data.id == 0 || state.isLoading
                               ? null
-                              : () async {
-                                  try {
-                                    await WooComApi.wc.delete(
-                                        'products/${data.id}',
-                                        {'force': true}).whenComplete(() {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                                title: const Text('Başarılı'),
-                                                content:
-                                                    const Text('Ürün silindi'),
-                                                actions: [
-                                                  TextButton(
-                                                      onPressed: () =>
-                                                          Navigator.pop(
-                                                              context),
-                                                      child:
-                                                          const Text('Tamam'))
-                                                ],
-                                              )).whenComplete(() {
-                                        ref
-                                            .read(productIdProvider.notifier)
-                                            .state = 0;
-                                        ref.refresh(productListProvider);
-                                      });
-                                    });
-                                  } catch (e) {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                              title: const Text('Hata'),
-                                              content: Text(e.toString()),
-                                              actions: [
-                                                TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(context),
-                                                    child: const Text('Tamam'))
-                                              ],
-                                            ));
-                                  }
-                                },
-                          child: const Text('Sil'),
+                              : () => ref
+                                  .read(productControllerProvider.notifier)
+                                  .deleteProduct(data.id!)
+                                  .whenComplete(
+                                      () => ref.refresh(productIdProvider))
+                                  .whenComplete(
+                                      () => ref.refresh(productListProvider)),
+                          child: state.isLoading
+                              ? const CircularProgressIndicator()
+                              : const Text('Sil'),
                         ),
                       ],
                     ),

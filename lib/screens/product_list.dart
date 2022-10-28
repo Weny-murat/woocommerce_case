@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:woocommerce_case/models/placeholder_data.dart';
+import 'package:woocommerce_case/dummyData/placeholder_data.dart';
 import 'package:woocommerce_case/providers/get_product_provider.dart';
 import 'package:woocommerce_case/providers/product_list_provider.dart';
 import 'package:woocommerce_case/providers/pageview_provider.dart';
@@ -115,24 +115,13 @@ class ProductList extends ConsumerWidget {
                                   Column(
                                     children: [
                                       Text('Ürün id: ${data[index].id}'),
-                                      Text(data[index].name ??
-                                          'İsim Verisi Yok'),
+                                      Text(
+                                        data[index].name ?? 'İsim Verisi Yok',
+                                        style: const TextStyle(
+                                            overflow: TextOverflow.visible),
+                                      ),
                                       Text(data[index].price ??
                                           'Fiyat Verisi Yok'),
-                                      RichText(
-                                        text: TextSpan(
-                                          text: 'Kategori: ',
-                                          style: DefaultTextStyle.of(context)
-                                              .style,
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                                text: data[index]
-                                                        .categories[0]
-                                                        .name ??
-                                                    'Kategori Verisi Yok'),
-                                          ],
-                                        ),
-                                      ),
                                       ElevatedButton(
                                           onPressed: () {
                                             PlaceHolder.pageController
